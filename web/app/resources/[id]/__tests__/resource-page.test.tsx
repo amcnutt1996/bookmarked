@@ -49,7 +49,6 @@ jest.mock("@/lib/useAuth", () => ({
   useAuth: jest.fn(),
 })); // mock auth call
 
-
 const memberOwnerAuth: AuthState = {
   token: "member-owner-token",
   user: {
@@ -85,8 +84,7 @@ beforeEach(() => {
   (useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
   (getResource as jest.Mock).mockResolvedValue({ resource }); // mockResolvedValue because it loads the Page from the useEffect
   (reportResource as jest.Mock).mockResolvedValue({ resource });
-})
-
+});
 
 test("loads resource for expected id, do not show delete / reaction buttons when logged out", async () => {
   (useAuth as jest.Mock).mockReturnValue({ auth: null, ready: true });
@@ -94,25 +92,35 @@ test("loads resource for expected id, do not show delete / reaction buttons when
   render(<Page />);
 
   expect(await screen.findByText(resource.title)).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Delete" }),
+  ).not.toBeInTheDocument();
 
   //check for each reaction from imported options in case it changes, since button for any shouldn't be there, only labels
-  REACTION_OPTIONS.forEach(name => {
+  REACTION_OPTIONS.forEach((name) => {
     expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
-  })
+  });
 });
 
 //show delete button to owner
 test("show delete button to resource owner", async () => {
-  (useAuth as jest.Mock).mockReturnValue({ auth: memberOwnerAuth, ready: true });
+  (useAuth as jest.Mock).mockReturnValue({
+    auth: memberOwnerAuth,
+    ready: true,
+  });
 
   render(<Page />);
 
-  expect(await screen.findByRole("button", { name: "Delete" })).toBeInTheDocument();
-})
+  expect(
+    await screen.findByRole("button", { name: "Delete" }),
+  ).toBeInTheDocument();
+});
 //dont show to non-owner
 test("doesn't display delete button if not the resource owner", async () => {
-  (useAuth as jest.Mock).mockReturnValue({ auth: memberOtherAuth, ready: true });
+  (useAuth as jest.Mock).mockReturnValue({
+    auth: memberOtherAuth,
+    ready: true,
+  });
 
   render(<Page />);
 
@@ -120,8 +128,10 @@ test("doesn't display delete button if not the resource owner", async () => {
   await screen.findByText(resource.title);
 
   // then you can actually query the button after it validates and loads the page + auth + getResource query
-  expect(screen.queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
-})
+  expect(
+    screen.queryByRole("button", { name: "Delete" }),
+  ).not.toBeInTheDocument();
+});
 
 // show delete button to moderators
 test("shows delete button to moderators", async () => {
@@ -129,12 +139,13 @@ test("shows delete button to moderators", async () => {
 
   render(<Page />);
 
-  expect(await screen.findByRole("button", { name: "Delete" })).toBeInTheDocument();
-})
-
+  expect(
+    await screen.findByRole("button", { name: "Delete" }),
+  ).toBeInTheDocument();
+});
 
 const auths = [memberOtherAuth, memberOwnerAuth, moderatorAuth];
-auths.forEach(a => {
+auths.forEach((a) => {
   // report button disables/relabels correctly for all users
   test(`report button disables and relabels correctly on click for ${a.user.role}`, async () => {
     const user = userEvent.setup();
@@ -144,7 +155,8 @@ auths.forEach(a => {
 
     expect(await screen.findByRole("button", { name: "Report broken link" }));
     await user.click(screen.getByText("Report broken link"));
-    expect(await screen.findByRole("button", { name: "Reported" })).toBeInTheDocument();
-  })
+    expect(
+      await screen.findByRole("button", { name: "Reported" }),
+    ).toBeInTheDocument();
+  });
 });
-

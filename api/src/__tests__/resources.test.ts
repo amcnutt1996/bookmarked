@@ -489,12 +489,12 @@ describe("POST /api/resources/:id/report", () => {
   });
 });
 
-describe("GET /api/resources/random", ()=>{
+describe("GET /api/resources/random", () => {
   let app: Application;
   beforeEach(() => {
     app = createApp();
   });
-  it("it gives a user a random resource", async ()=>{
+  it("it gives a user a random resource", async () => {
     const { token } = await registerAndLogin("reporter@example.com");
 
     await request(app)

@@ -18,22 +18,13 @@ export function createApp(): Application {
     standardHeaders: true,
     legacyHeaders: false,
   });
-  const resourceLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    limit: 30,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: {
-      error: "Too many requests to resources. Please try again later.",
-    },
-  });
 
   app.get("/api/health", (req: Request, res: Response) => {
     res.json({ status: "ok" });
   });
 
   app.use("/api/auth", writeLimiter, authRoutes);
-  app.use("/api/resources", resourceLimiter, resourcesRoutes);
+  app.use("/api/resources", resourcesRoutes);
 
   app.use((req: Request, res: Response) => {
     res.status(404).json({ error: "Not found" });

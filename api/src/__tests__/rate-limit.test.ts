@@ -7,14 +7,14 @@ beforeEach(() => {
   app = createApp();
 });
 
-describe("Rate Limiter testing", () => {
+describe("Resource rate limiter 30/minute", () => {
   test("app hits rate limiter when trying to access resources over 30 times in under a minute", async () => {
     // send the 30 hits and make sure they're all successful
     for (let i = 0; i < 30; i++) {
       const res = await request(app).get("/api/resources");
       expect(res.status).toBe(200); // all 30 should give successful 200
     }
-    // and error on the 31st.
+    // should have 0 remaining requests at this response (last access before limiter activates)
     const failResponse = await request(app).get("/api/resources");
     expect(failResponse.headers["ratelimit-remaining"]).toBe("0");
 
